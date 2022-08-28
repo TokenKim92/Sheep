@@ -13,19 +13,20 @@ export default class BaseCanvas {
 
   constructor(isFull = false) {
     this.#canvas = document.createElement('canvas');
+    this.#canvas.style.position = 'absolute';
     this.#ctx = this.#canvas.getContext('2d');
     document.body.append(this.#canvas);
 
     this.#isFull = isFull;
-    this.#isFull && this.#canvas.classList.add('canvas-full');
+    if (this.#isFull) {
+      this.#canvas.style.width = '100%';
+      this.#canvas.style.height = '100%';
+    }
   }
 
   resize(width = 0, height = 0) {
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0); // prettier-ignore
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0); // prettier-ignore
-
-    this.#stageWidth = width === 0 ? vw : width;
-    this.#stageHeight = height === 0 ? vh : height;
+    this.#stageWidth = width === 0 ? document.body.clientWidth : width;
+    this.#stageHeight = height === 0 ? document.body.clientHeight : height;
 
     this.#canvas.width = this.#stageWidth;
     this.#canvas.height = this.#stageHeight;
@@ -65,6 +66,32 @@ export default class BaseCanvas {
     this.#canvas.style.top = `${y}px`;
   }
 
+  hide(millisecond = 0, mode = 'ease') {
+    if (!millisecond) {
+      this.#canvas.style.opacity = '0';
+      return;
+    }
+
+    setTimeout(() => {
+      this.#canvas.style.opacity = '0';
+      this.#canvas.style.transition = `opacity ${millisecond}ms  ${mode}`;
+      setTimeout(() => (this.#canvas.style.transition = ''), millisecond);
+    }, millisecond);
+  }
+
+  show(millisecond = 0, mode = 'ease') {
+    if (!millisecond) {
+      this.#canvas.style.opacity = '1';
+      return;
+    }
+
+    setTimeout(() => {
+      this.#canvas.style.opacity = '1';
+      this.#canvas.style.transition = `opacity ${millisecond}ms  ${mode}`;
+      setTimeout(() => (this.#canvas.style.transition = ''), millisecond);
+    }, millisecond);
+  }
+
   get stageWidth() {
     return this.#stageWidth;
   }
@@ -87,8 +114,8 @@ export default class BaseCanvas {
 
   get sizeMode() {
     const canvasSizeModes = [
-      { mode: BaseCanvas.SMALL_MODE, size: 500 },
-      { mode: BaseCanvas.REGULAR_MODE, size: 1000 },
+      { mode: BaseCanvas.SMALL_MODE, size: 768 },
+      { mode: BaseCanvas.REGULAR_MODE, size: 1374 },
       { mode: BaseCanvas.MEDIUM_MODE, size: 1980 },
       { mode: BaseCanvas.LARGE_MODE, size: 3840 },
     ];
@@ -99,5 +126,13 @@ export default class BaseCanvas {
         .length; // prettier-ignore
 
     return canvasSizeModes[sizeModeIndex].mode;
+  }
+
+  set backgroundColor(color) {
+    this.#canvas.style.background = color;
+  }
+
+  set borderRadius(pixel) {
+    this.#canvas.style.borderRadius = `${pixel}px`;
   }
 }

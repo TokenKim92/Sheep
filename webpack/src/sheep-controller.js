@@ -1,7 +1,7 @@
 import Sheep from './sheep.js';
 
 export default class SheepController {
-  static COUNT_TO_ADD_SHEEP = 200;
+  static COUNT_TO_ADD_SHEEP = 100;
 
   #img;
   #sheepList = [];
