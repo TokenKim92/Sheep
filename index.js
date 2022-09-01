@@ -1,4 +1,4 @@
-import './webpack/dist/sheep.js';
+import './webpack/dist/sheep.min.js';
 
 window.onload = () => {
   const appBuilder = new AppBuilder();
@@ -9,11 +9,16 @@ class AppBuilder {
   #app;
 
   build() {
-    this.#app = new Sheep();
+    WebFont.load({
+      google: { families: ['Fjalla One'] },
+      fontactive: () => {
+        this.#app = new Sheep('Fjalla One');
 
-    this.resize();
-    window.addEventListener('resize', this.resize);
-    window.requestAnimationFrame(this.animate);
+        this.resize();
+        window.addEventListener('resize', this.resize);
+        window.requestAnimationFrame(this.animate);
+      },
+    });
   }
 
   resize = () => {

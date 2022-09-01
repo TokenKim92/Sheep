@@ -4,6 +4,7 @@ import Sun from './sun.js';
 import BaseCanvas from '../lib/baseCanvas.js';
 import Watermark from '../lib/watermark.js';
 import sheepImage from '../imgs/sheep.png';
+import TypingBanner from './typingBanner.js';
 
 export default class Scenery extends BaseCanvas {
   #hills;
@@ -11,10 +12,12 @@ export default class Scenery extends BaseCanvas {
   #sheepController;
   #watermark;
   #isImageLoaded = false;
+  #explainBanner;
 
-  constructor() {
+  constructor(fontName) {
     super(true);
 
+    this.#explainBanner = new TypingBanner(fontName, 50, '#ffffff', '#2f2f2fcc'); //prettier-ignore
     this.#watermark = new Watermark(
       "Basic code by 'Interactive Developer'",
       'Arial'
@@ -33,12 +36,16 @@ export default class Scenery extends BaseCanvas {
       this.#isImageLoaded = true;
 
       this.resize();
+      this.#explainBanner.show(300);
     };
+
+    window.addEventListener('click', this.onClick);
   }
 
   resize() {
     super.resize();
 
+    this.#explainBanner.resize();
     this.#watermark.resize();
     this.#watermark.draw();
     this.#sun.resize(this.stageWidth, this.stageHeight);
@@ -52,15 +59,22 @@ export default class Scenery extends BaseCanvas {
   bringToStage() {
     super.bringToStage();
     this.#watermark.bringToStage();
+
+    this.#explainBanner.setMessage();
+    this.#explainBanner.show(300);
+    window.addEventListener('click', this.onClick);
   }
 
   removeFromStage() {
     super.removeFromStage();
+    this.#explainBanner.hide();
     this.#watermark.removeFromStage();
+    window.removeEventListener('click', this.onClick);
   }
 
   animate(curTime) {
     this.clearCanvas();
+    this.#explainBanner.animate(curTime);
     this.#sun.draw(this.ctx, curTime);
     let dots;
     this.#hills.forEach((hill) => {
@@ -68,4 +82,8 @@ export default class Scenery extends BaseCanvas {
     });
     this.#isImageLoaded && this.#sheepController.draw(this.ctx, curTime, dots);
   }
+
+  #onClick = () => {
+    this.#explainBanner.hide();
+  };
 }
